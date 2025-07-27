@@ -4,25 +4,37 @@ import axios from "axios";
 import './user.css'
 
 export default function Register(){
-    let naviget = useNavigate();
-    let [userPasword, setUserPasword] = useState({username:'',password:''});
+    let navigate = useNavigate();
+    let [userPassword, setUserPasword] = useState({username:'',password:''});
 
-    function createAccount(){
-        axios.post('http://localhost:9999/users', userPasword ).then((response)=>{
-            naviget('/');
-            console.log(response.data)
-        }).catch((error) => {
-            console.error("Lỗi khi tạo tài khoản:", error);
-        });
+    function creatAccount(){
+        if(!userPassword.username || !userPassword.password){
+            alert("vui lòng không bỏ trống");
+            return
+        }
+        axios.get("http://localhost:9999/users",).then((response)=>{
+            const data = response.data.some((x)=>x.username === userPassword.username);
+            if(data){
+                alert('tài khoản đã tồn tại')
+                return
+            }
+            else{
+                axios.post("http://localhost:9999/users", userPassword).then((response) => {
+                    alert("Account created successfully");
+                    navigate('/login');
+                })
+            }
+        })
+
     }
 
 
     return(
         <>
             <div  className={'container'}><p><h4>Register Page</h4></p>
-            <input className={'edit'} type="text" placeholder="Tạo tên đăng nhập" value={userPasword.username} onChange={(e)=>setUserPasword({...userPasword, username: e.target.value})}/>
-            <input className={'edit'} type="text" placeholder="Tạo mật khẩu" value={userPasword.password} onChange={(e)=>setUserPasword({...userPasword, password: e.target.value})}/>
-            <button onClick={()=>createAccount() }>tạo tài khoản</button>
+            <input className={'edit'} type="text" placeholder="Tạo tên đăng nhập" value={userPassword.username} onChange={(e)=>setUserPasword({...userPassword, username: e.target.value})}/>
+            <input className={'edit'} type="text" placeholder="Tạo mật khẩu" value={userPassword.password} onChange={(e)=>setUserPasword({...userPassword, password: e.target.value})}/>
+            <button onClick={()=>creatAccount() }>tạo tài khoản</button>
             </div>
         </>
     )
